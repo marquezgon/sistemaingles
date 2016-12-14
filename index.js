@@ -1,7 +1,10 @@
 'use strict';
 const Hapi = require('hapi');
 var Mongoose = require('mongoose');
+var Bcrypt = require('bcrypt');
 var User = require('./models/user.js');
+var routes = require('./routes');
+var SALT_WORK_FACTOR = 12;
 
 //CONNECTION DATA BASE
 var mongodbUri = 'mongodb://'+process.env.DBUSER+':'+process.env.DBPASS+'@'+process.env.DBHOST+':'+process.env.DBPORT+'/'+process.env.DBNAME;
@@ -31,22 +34,33 @@ db.once('open', function callback() {
 //   console.log('User created!');
 // });
 
+function createHashUser(pass,user) {
+    Bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+        if(err) {
+                return console.error(err);
+        }
 
+        Bcrypt.hash(pass, salt, function(err, hash) {
+                if(err) {
+                        return console.error(err);
+                }
+            user.password = hash;
+            user.save(function(err) {
+                if (err) throw err;
 
-// User.findById('585084eeb6e9eb4c9ecd3a28', function(err, user) {
-//   if (err) throw err;
+                console.log('User successfully updated!');
+            });
 
-//   // change the users location
-//   user.name = 'new name';
+            console.log(hash);
+        });
+    });
+}
 
-//   // save the user
-//   user.save(function(err) {
-//     if (err) throw err;
+User.findById('585084eeb6e9eb4c9ecd3a28', function(err, user) {
+  if (err) throw err;
+    createHashUser('123456', user);      
+});
 
-//     console.log('User successfully updated!');
-//   });
-
-// });
 
 
 
@@ -64,16 +78,10 @@ server.connection({
     host: process.env.NODE_HOST,
     port: process.env.NODE_PORT
 });
+//server.auth.strategy('simple', 'basic', { validateFunc: validate });
+server.route(routes);
 
-// Add the route
-server.route({
-    method: 'GET',
-    path:'/hello',
-    handler: function (request, reply) {
 
-        return reply('hello world');
-    }
-});
 
 // Start the server
 server.start((err) => {
