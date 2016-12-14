@@ -25,7 +25,9 @@
   },
   "devDependencies": {
     "bcrypt": "^1.0.1",
+    "boom": "^4.2.0",
     "hapi-auth-basic": "^4.2.0",
+    "joi": "^10.0.6",
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0",
     "should": "^11.1.2",

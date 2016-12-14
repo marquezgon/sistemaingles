@@ -34,42 +34,42 @@ db.once('open', function callback() {
 //   console.log('User created!');
 // });
 
-function createHashUser(pass,user) {
-    Bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-        if(err) {
-                return console.error(err);
-        }
+// function createHashUser(pass,user) {
+//     Bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+//         if(err) {
+//                 return console.error(err);
+//         }
 
-        Bcrypt.hash(pass, salt, function(err, hash) {
-                if(err) {
-                        return console.error(err);
-                }
-            user.password = hash;
-            user.save(function(err) {
-                if (err) throw err;
+//         Bcrypt.hash(pass, salt, function(err, hash) {
+//                 if(err) {
+//                         return console.error(err);
+//                 }
+//             user.password = hash;
+//             user.save(function(err) {
+//                 if (err) throw err;
 
-                console.log('User successfully updated!');
-            });
+//                 console.log('User successfully updated!');
+//             });
 
-            console.log(hash);
-        });
-    });
-}
+//             console.log(hash);
+//         });
+//     });
+// }
 
-User.findById('585084eeb6e9eb4c9ecd3a28', function(err, user) {
-  if (err) throw err;
-    createHashUser('123456', user);      
-});
-
-
+// User.findById('585084eeb6e9eb4c9ecd3a28', function(err, user) {
+//   if (err) throw err;
+//     createHashUser('123456', user);      
+// });
 
 
-User.find({}, function(err, users) {
-  if (err) throw err;
 
-  // object of all the users
-  console.log(users);
-});
+
+// User.find({}, function(err, users) {
+//   if (err) throw err;
+
+//   // object of all the users
+//   console.log(users);
+// });
 
 // Create a server with a host and port
 const server = new Hapi.Server();
@@ -80,7 +80,6 @@ server.connection({
 });
 //server.auth.strategy('simple', 'basic', { validateFunc: validate });
 server.route(routes);
-
 
 
 // Start the server
