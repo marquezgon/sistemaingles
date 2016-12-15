@@ -8,6 +8,7 @@ var SALT_WORK_FACTOR = 12;
 
 //CONNECTION DATA BASE
 var mongodbUri = 'mongodb://'+process.env.DBUSER+':'+process.env.DBPASS+'@'+process.env.DBHOST+':'+process.env.DBPORT+'/'+process.env.DBNAME;
+console.log(mongodbUri);
 Mongoose.connect(mongodbUri);
 
 var db = Mongoose.connection;
