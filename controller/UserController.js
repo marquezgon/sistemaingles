@@ -14,26 +14,27 @@ exports.login = {
         var payload = request.payload;
         try{
             User.find({username : payload.username }, function(err, user) {//Se ejecuta la busqueda con el parametro de username
-                if (!err && user.length > 0) {//en caso de encontrar al usuario comparamos su password con la encriptacion Bcrypt
+                if (err) throw err;
+                if (user.length > 0) {//en caso de encontrar al usuario comparamos su password con la encriptacion Bcrypt
                      Bcrypt.compare(payload.password , user[0].password, function(err, isMatch) {
                         if(err) {
                                  reply(Boom.badImplementation(err)); // 500 error
                         } else{
-                            if(isMatch){// isMatch indica si los passwords son iguales o no 
+                            if(isMatch){// isMatch indica si los passwords son iguales o no
                                 reply(user);
                             } else{
                                 reply(Boom.unauthorized('Failed validation'));
                             }
                         }
                     });
-                }else{
+                } else {
                    reply(Boom.unauthorized('Failed validation'));
-                } 
+                }
             });
         }catch(err){
             reply(Boom.badImplementation(err.message));
         }
-        
+
     }
 };
 
@@ -43,8 +44,8 @@ exports.getAll = {
             if (!err) {
                 reply(user);//retornamos un arreglo con todos los objetos de la base de datos
                 return;
-            } 
-            reply(Boom.badImplementation(err)); 
+            }
+            reply(Boom.badImplementation(err));
         });
     }
 };
@@ -71,20 +72,21 @@ exports.update = {
                 user.username = payload.username;
                 user.lastname = payload.lastname;
                 if(payload.password){//si el password llega, se encripta y se guarda
-                    createHashUser(payload.password, user, reply);
+                  user.password = payload.password;
+                  createHashUser(user, reply);
                 }else{
                      user.save(function(err) {
                         if (!err){
                             reply(user);
                         }else{
                             reply(Boom.unauthorized('Invalid data. ' + err.message));
-                        } 
+                        }
                     });
                 }
             }else{
                 reply(Boom.notFound('User not found'));
                 return;
-            } 
+            }
         });
     }
 };
@@ -101,13 +103,13 @@ exports.updatePass = {
     },
     handler: function(request, reply) {
         var payload = request.payload   // recivir parametros por post
-        console.log(payload)
-        console.log(request.params);
         // reply(payload);
         User.findById( request.params.id , function(err, user) {
-            if(!err && user){
-                createHashUser(payload.password, user, reply);
-            }else{
+            if(err) throw err;
+            if(user){
+                user.password = payload.password
+                createHashUser(user, reply);
+            } else {
                 reply(Boom.notFound('User not found'));
             }
         });
@@ -121,7 +123,7 @@ exports.getUser = {
             if (!err) {
                 reply(user);
                 return;
-            } 
+            }
             reply(Boom.notFound('User not found')); // 500 error
         });
     }
@@ -149,52 +151,35 @@ exports.create = {
                       status: (payload.status ? payload.status : 1),
                       created :  new Date()
                     });
-                    
-                    newUser.save(function(err) {
-                        if (!err){
-                            createHashUser(payload.password, newUser, reply);
-                        }else{
-                            reply(Boom.unauthorized('Invalid data. ' + err.message));
-                        } 
-                    });
-                }else{
-                    reply(Boom.conflict('Duplicated username')); 
+                    createHashUser(newUser, reply);
+
+                } else {
+                    reply(Boom.conflict('Duplicated username'));
                 }
                 return;
-            } 
+            }
             reply(Boom.badImplementation(err)); // 500 error
         });
     }
 };
 
-function createHashUser(pass, user, reply) {
+function createHashUser(user, reply) {
     Bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
         if(!err) {
-            Bcrypt.hash(pass, salt, function(err, hash) {
-                if(err) {
-                     user.remove(function(err) {
-                        if (err) throw err;
-                        reply(Boom.badRequest('Error encrypting password. ')); 
-                    });
-                    return false;
+            Bcrypt.hash(user.password, salt, function(err, hash) {
+              if(err) throw err;
+              user.password = hash;
+              user.save(function(err) {
+                if (!err) {
+                  reply(user);
+                } else {
+                  throw err;
                 }
-                user.password = hash;
-                user.save(function(err) {
-                    if (!err){
-                        reply(user);
-                        return;
-                    }else{
-                        user.remove(function(err) {
-                            if (err) throw err;
-                            reply(Boom.badRequest('Error encrypting password')); 
-                            return;
-                        });
-                    }
-                });
-                return false;
-            });    
+              });
+            });
+        } else {
+          throw err;
         }
-        return false;
     });
 }
 
@@ -211,7 +196,7 @@ exports.delete = {
                 reply({message : 'User deleted'})
             }else{
                 reply(Boom.notFound('User not found'));// en caso de no encotrarlo se regresa el status not found
-            } 
+            }
         });
     }
 };
