@@ -64,8 +64,6 @@ exports.update = {
     handler: function(request, reply) {
         var payload = request.payload   // recivir parametros por post
         User.findById( request.params.id , function(err, user) {
-            if (err) throw err;
-            console.log(user);
             if (user) {//si se encuentra el usuario, se setea con sus nuevos valores
                 user.name = payload.name;
                 user.username = payload.username;
@@ -101,9 +99,6 @@ exports.updatePass = {
     },
     handler: function(request, reply) {
         var payload = request.payload   // recivir parametros por post
-        console.log(payload)
-        console.log(request.params);
-        // reply(payload);
         User.findById( request.params.id , function(err, user) {
             if(!err && user){
                 createHashUser(payload.password, user, reply);
@@ -122,7 +117,7 @@ exports.getUser = {
                 reply(user);
                 return;
             } 
-            reply(Boom.notFound('User not found')); // 500 error
+            reply(Boom.notFound('User not found')); // 404 error
         });
     }
 };
