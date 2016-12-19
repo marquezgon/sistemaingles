@@ -20,13 +20,13 @@
   "homepage": "https://github.com/marquezgon/sistemaingles#readme",
   "dependencies": {
     "hapi": "^16.0.1",
+    "hapi-auth-jwt": "^4.0.0",
     "mongoose": "^4.7.2",
     "mongoose-unique-validator": "^1.0.3"
   },
   "devDependencies": {
     "bcrypt": "^1.0.1",
     "boom": "^4.2.0",
-    "hapi-auth-basic": "^4.2.0",
     "joi": "^10.0.6",
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0",

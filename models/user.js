@@ -8,6 +8,7 @@ var schema = new Schema({
     password: {type: String},
     name: {type: String, required: true},
     lastname: {type: String, required: true},
+    scope: {type: String, required: true},
     created: {type: Date, required: true},
     status: {type: Number, required: true},
 });

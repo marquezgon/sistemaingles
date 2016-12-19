@@ -5,10 +5,10 @@ var Bcrypt = require('bcrypt');
 var User = require('./models/user.js');
 var routes = require('./routes');
 var SALT_WORK_FACTOR = 12;
+const secret = 'm3x3rp';
 
 //CONNECTION DATA BASE
 var mongodbUri = 'mongodb://'+process.env.DBUSER+':'+process.env.DBPASS+'@'+process.env.DBHOST+':'+process.env.DBPORT+'/'+process.env.DBNAME;
-console.log(mongodbUri);
 Mongoose.connect(mongodbUri);
 
 var db = Mongoose.connection;
@@ -25,9 +25,30 @@ server.connection({
     host: process.env.NODE_HOST,
     port: process.env.NODE_PORT
 });
-//server.auth.strategy('simple', 'basic', { validateFunc: validate });
-server.route(routes);
 
+
+var validate = function (token, request, callback) {
+        console.log('entro');
+
+    jwt.verify(token, secret, function (err, decoded) {
+      if (err) {
+        return callback(err)
+      }
+      var credentials = request.auth.credentials;
+      // .. do some additional credentials checking
+      return callback(null, true, decoded);
+    });
+};
+
+
+server.register(require('hapi-auth-jwt'), function (error) {
+    server.auth.strategy('jwt', 'jwt', {
+        key: secret,
+        validateFunc: validate
+    });
+
+    server.route(routes);
+});
 
 // Start the server
 server.start((err) => {

@@ -3,6 +3,21 @@ var Boom = require('boom');
 var User = require('../models/user.js');
 var Bcrypt = require('bcrypt');
 var SALT_WORK_FACTOR = 12;
+const jwt = require('jsonwebtoken');
+
+
+const authenticateUserSchema = Joi.alternatives().try(
+  Joi.object({
+    username: Joi.string().alphanum().min(2).max(30).required(),
+    password: Joi.string().required()
+  }),
+  Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required()
+  })
+);
+
+
 exports.login = {
     validate: {
         payload: {
@@ -21,7 +36,7 @@ exports.login = {
                                  reply(Boom.badImplementation(err)); // 500 error
                         } else{
                             if(isMatch){// isMatch indica si los passwords son iguales o no
-                                reply(user);
+                                reply({ id_token: createToken(user) }).code(201);
                             } else{
                                 reply(Boom.unauthorized('Failed validation'));
                             }
@@ -38,14 +53,59 @@ exports.login = {
     }
 };
 
+
+function createToken(user) {
+  let scopes;
+  // Check if the user object passed in
+  // has admin set to true, and if so, set
+  // scopes to admin
+  if (user.admin) {
+    scopes = 'admin';
+  }
+  // Sign the JWT
+  return jwt.sign({ id: user._id, username: user.username, scope: scopes }, 'secretkey', { algorithm: 'HS256', expiresIn: "1h" } );
+}
+
+function verifyCredentials(req, res) {
+
+  const password = req.payload.password;
+
+  // Find an entry from the database that
+  // matches either the email or username
+  User.findOne({
+    $or: [
+      { email: req.payload.email },
+      { username: req.payload.username }
+    ]
+  }, (err, user) => {
+    if (user) {
+      bcrypt.compare(password, user.password, (err, isValid) => {
+        if (isValid) {
+          res(user);
+        }
+        else {
+          res(Boom.badRequest('Incorrect password!'));
+        }
+      });
+    } else {
+      res(Boom.badRequest('Incorrect username or email!'));
+    }
+  });
+}
+
+
 exports.getAll = {
+    auth : {
+            strategy: 'jwt',
+            mode: 'required'
+        },
     handler: function(request, reply) {
         User.find({}, function(err, user) {// Se ejecuta la busqueda sin parametros ya que se requeren todos los registros
             if (!err) {
-                reply(user);//retornamos un arreglo con todos los objetos de la base de datos
+                reply(user).header("Authorization", request.headers.authorization);;//retornamos un arreglo con todos los objetos de la base de datos
                 return;
             }
-            reply(Boom.badImplementation(err));
+            reply(Boom.badImplementation(err)).header("Authorization", request.headers.authorization);;
         });
     }
 };
@@ -55,6 +115,7 @@ exports.update = {
         payload: {
             name : Joi.string().required(),
             username : Joi.string().required(),
+            scope : Joi.string().required(),
             lastname : Joi.string().required(),
             password : Joi.string().optional(),
         },
@@ -68,6 +129,7 @@ exports.update = {
             if (user) {//si se encuentra el usuario, se setea con sus nuevos valores
                 user.name = payload.name;
                 user.username = payload.username;
+                user.scope = payload.scope;
                 user.lastname = payload.lastname;
                 if(payload.password){//si el password llega, se encripta y se guarda
                   user.password = payload.password;
@@ -132,6 +194,7 @@ exports.create = {
             name : Joi.string().required(),
             username : Joi.string().required(),
             password : Joi.string().required(),
+            scope : Joi.string().required(),
             lastname : Joi.string().required(),
         }
     },
@@ -144,6 +207,7 @@ exports.create = {
                       name: payload.name,
                       lastname: payload.lastname,
                       username: payload.username,
+                      scope: payload.scope,
                       password: payload.password,
                       status: (payload.status ? payload.status : 1),
                       created :  new Date()
