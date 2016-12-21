@@ -6,6 +6,7 @@ var User = require('./models/user.js');
 var routes = require('./routes');
 var SALT_WORK_FACTOR = 12;
 const secret = 'm3x3rp';
+const jwt = require('jsonwebtoken');
 
 //CONNECTION DATA BASE
 var mongodbUri = 'mongodb://'+process.env.DBUSER+':'+process.env.DBPASS+'@'+process.env.DBHOST+':'+process.env.DBPORT+'/'+process.env.DBNAME;
@@ -27,34 +28,38 @@ server.connection({
 });
 
 
-var validate = function (token, request, callback) {
-        console.log('entro');
-
+var validate = function (request, token, callback) {
+    token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0ODIzNDE1ODYsImV4cCI6MTQ4MjM0NTE4Nn0.oeuPx8gPve970sHG8rewXydrMu0mk0Ff1xKBMtt2QZw';
     jwt.verify(token, secret, function (err, decoded) {
       if (err) {
         return callback(err)
       }
-      var credentials = request.auth.credentials;
+      console.log(decoded);
+      //var credentials = request.auth.credentials;
       // .. do some additional credentials checking
       return callback(null, true, decoded);
     });
 };
 
 
-server.register(require('hapi-auth-jwt'), function (error) {
+server.register(require('hapi-auth-jwt'), (err) => {
+    if (err) {
+        throw err;
+    }
+
     server.auth.strategy('jwt', 'jwt', {
         key: secret,
         validateFunc: validate
     });
 
     server.route(routes);
-});
 
-// Start the server
-server.start((err) => {
+    // Start the server
+    server.start((err) => {
 
-    if (err) {
-        throw err;
-    }
-    console.log('Server running at:', server.info.uri);
+        if (err) {
+            throw err;
+        }
+        console.log('Server running at:', server.info.uri);
+    });
 });

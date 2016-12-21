@@ -21,6 +21,7 @@
   "dependencies": {
     "hapi": "^16.0.1",
     "hapi-auth-jwt": "^4.0.0",
+    "jsonwebtoken": "^7.2.1",
     "mongoose": "^4.7.2",
     "mongoose-unique-validator": "^1.0.3"
   },

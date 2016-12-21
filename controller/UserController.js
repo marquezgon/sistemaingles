@@ -36,7 +36,7 @@ exports.login = {
                                  reply(Boom.badImplementation(err)); // 500 error
                         } else{
                             if(isMatch){// isMatch indica si los passwords son iguales o no
-                                reply({ id_token: createToken(user) }).code(201);
+                                reply({ token: createToken(user) }).code(201);
                             } else{
                                 reply(Boom.unauthorized('Failed validation'));
                             }
@@ -63,7 +63,7 @@ function createToken(user) {
     scopes = 'admin';
   }
   // Sign the JWT
-  return jwt.sign({ id: user._id, username: user.username, scope: scopes }, 'secretkey', { algorithm: 'HS256', expiresIn: "1h" } );
+  return jwt.sign({ id: user._id, username: user.username }, 'm3x3rp', { algorithm: 'HS256', expiresIn: "1h" } );
 }
 
 function verifyCredentials(req, res) {
@@ -182,7 +182,7 @@ exports.getUser = {
             if (!err) {
                 reply(user);
                 return;
-            } 
+            }
             reply(Boom.notFound('User not found')); // 404 error
         });
     }
