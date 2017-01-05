@@ -1,7 +1,6 @@
 'use strict';
 
 const User = require('../models/user.js');
-const secret = 'm3x3rp';
 
 exports.register = function (server, options, next) {
     const validate = (request, decodedToken, callback) => {
@@ -17,7 +16,7 @@ exports.register = function (server, options, next) {
     };
 
     server.auth.strategy('jwt', 'jwt', {
-        key: secret,
+        key: server.settings.app.secret,
         validateFunc: validate
     });
 
@@ -25,6 +24,6 @@ exports.register = function (server, options, next) {
 };
 
 exports.register.attributes = {
-    name: 'auth',
+    name: 'plugins-auth',
     dependencies: ['hapi-auth-jwt']
 };

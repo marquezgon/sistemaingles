@@ -2,7 +2,7 @@ var request = require('supertest');
 require('../index.js');
 require('should');
 var server = request.agent("http://localhost:8000");
-const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdtYXJxdWV6IiwiaWQiOiI1ODU0NDFiNDE3ZWI1MDBlMzU4ZmQxZGQiLCJpYXQiOjE0ODM1NzE2OTAsImV4cCI6MTQ4MzU3NTI5MH0.JLV6Q6AvvL8hJto4nUSpmJdC3hc9wfCO5nHM2Ee-BOM';
+const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdtYXJxdWV6IiwiaWQiOiI1ODU0NDFiNDE3ZWI1MDBlMzU4ZmQxZGQiLCJpYXQiOjE0ODM2NDUyOTMsImV4cCI6MTQ4MzY0ODg5M30.bQlDc_HooYBkpBk8iU_xVvpFNyOYPC3GG-8KCeXAD5U';
 
 describe('Task routes', function () {
     describe('GET /users', function () {
@@ -45,7 +45,7 @@ describe('Task routes', function () {
                 .post('/users')
                 .send({
                     password: '3333',
-                    username: 'noTesta',
+                    username: 'noTesta'+new Date().getTime(),
                     name: 'nuevo',
                     lastname: 'test'
                 })
@@ -62,9 +62,9 @@ describe('Task routes', function () {
                 .set('Authorization', token)
                 .send({
                     password: '3333',
-                    username: 'uersd',
+                    username: 'gmarquez12',
                     name: 'heyll',
-                    lastname: 'test'
+                    lastname: 'test',
                 })
                 .expect("Content-type", /json/)
                 .expect(409)
@@ -73,7 +73,7 @@ describe('Task routes', function () {
                     done();
                 });
         });
-        it('missina data', function (done) {
+        it('missing data', function (done) {
             server
                 .post('/users')
                 .send({
@@ -88,10 +88,10 @@ describe('Task routes', function () {
                 });
         });
     });
-    describe('DELETE /users/5852fa6a374c92a0c19b5faf', function () {
+    describe('DELETE /users/5858012e5def1905cbd52881', function () {
         it('delete a user', function (done) {
             server
-                .get('/users')
+                .delete('/users/586ea5a2a08587e7af0b2fc9')
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
@@ -101,11 +101,11 @@ describe('Task routes', function () {
         });
     });
     describe('PUT /users/5857ff6c8c4086042c1f8f21', function () {
-        it('save  user', function (done) {
+        it('update  user', function (done) {
             server
                 .put('/users/5857ff6c8c4086042c1f8f21')
                 .send({
-                    password: '3333',
+                    password: '33334',
                     username: 'test2',
                     name: 'nuevo',
                     lastname: 'test2'
@@ -133,7 +133,7 @@ describe('Task routes', function () {
         });
         it('user not exist', function (done) {
             server
-                .put('/users/5857ff6c8c40asds86042c1f8f21')
+                .put('/users/5857ff6c8c40asds86042c1f8f22')
                 .send({
                    password: '3333',
                     username: 'test2',
@@ -153,7 +153,7 @@ describe('Task routes', function () {
             server
                 .patch('/users/5857ff6c8c4086042c1f8f21')
                 .send({
-                    password: '123456',
+                    password: '1234567',
                 })
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -164,7 +164,7 @@ describe('Task routes', function () {
         });
         it('missing data', function (done) {
             server
-                .put('/users/5857ff6c8c4086042c1f8f21')
+                .patch('/users/5857ff6c8c4086042c1f8f21')
                 .expect("Content-type", /json/)
                 .expect(400)
                 .end(function (err, res) {
@@ -174,12 +174,9 @@ describe('Task routes', function () {
         });
         it('user does not exist', function (done) {
             server
-                .put('/users/5857ff6c8c40asds86042c1f8f21')
+                .patch('/users/5857ff6c8c4086042c1f8f28')
                 .send({
-                   password: '3333',
-                    username: 'test2',
-                    name: 'nuevo',
-                    lastname: 'test2'
+                   password: '3333'
                 })
                 .expect("Content-type", /json/)
                 .expect(404)

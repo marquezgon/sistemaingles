@@ -18,20 +18,27 @@ db.once('open', function callback() {
 });
 
 // Create a server with a host and port
-const server = new Hapi.Server();
+const server = new Hapi.Server({
+  app: {
+    secret: 'm3x3rp'
+  }
+});
 
 server.connection({
     host: process.env.NODE_HOST,
     port: process.env.NODE_PORT
 });
 
+//we register all plugins and routes
 server.register(
   [{
     register: require('hapi-auth-jwt')
   }, {
-    register: require('./plugins/auth.js')
+    register: require('./plugins/auth')
   }, {
-    register: require('./routes/user.js')
+    register: require('./routes/user')
+  }, {
+    register: require('./routes/auth')
   }], (err) => {
     if (err) {
         throw err;

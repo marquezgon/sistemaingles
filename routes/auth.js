@@ -1,0 +1,66 @@
+'use strict';
+
+const Joi = require('joi');
+const Boom = require('boom');
+var Bcrypt = require('bcrypt');
+const User = require('../models/user.js');
+const jwt = require('jsonwebtoken');
+
+exports.register = function(server, options, next) {
+
+    const createToken = function (user) {
+        try {
+            let userObj = user[0];
+            // Sign the JWT
+            return jwt.sign({ username: userObj.username, id: userObj._id }, server.settings.app.secret, { algorithm: 'HS256', expiresIn: "1h" } );
+        } catch (err) {
+            throw err;
+        }
+    }
+
+  //login admin user
+  server.route({
+      method: 'POST',
+      path: '/users/login',
+      config: {
+          validate: {
+          payload: {
+              username : Joi.string().required(),
+              password : Joi.string().required(),
+          }
+        }
+      },
+      handler: function(request, reply) {
+          var payload = request.payload;
+          try{
+              User.find({username : payload.username }, function(err, user) {//Se ejecuta la busqueda con el parametro de username
+                  if (err) throw err;
+                  if (user.length > 0) {//en caso de encontrar al usuario comparamos su password con la encriptacion Bcrypt
+                       Bcrypt.compare(payload.password , user[0].password, function(err, isMatch) {
+                          if(err) {
+                                   return reply(Boom.badImplementation(err)); // 500 error
+                          } else{
+                              if(isMatch){// isMatch indica si los passwords son iguales o no
+                                  return reply({ token: createToken(user) }).code(201);
+                              } else{
+                                  return reply(Boom.unauthorized('Incorrect username or password'));
+                              }
+                          }
+                      });
+                  } else {
+                     return reply(Boom.unauthorized('Failed validation'));
+                  }
+              });
+          }catch(err){
+              return reply(Boom.badImplementation(err.message));
+          }
+
+      }
+  });
+
+  return next();
+}
+
+exports.register.attributes = {
+    name: 'routes-auth'
+};
