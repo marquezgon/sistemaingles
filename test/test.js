@@ -2,14 +2,31 @@ var request = require('supertest');
 require('../index.js');
 require('should');
 var server = request.agent("http://localhost:8000");
-const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdtYXJxdWV6IiwiaWQiOiI1ODU0NDFiNDE3ZWI1MDBlMzU4ZmQxZGQiLCJpYXQiOjE0ODM2NDUyOTMsImV4cCI6MTQ4MzY0ODg5M30.bQlDc_HooYBkpBk8iU_xVvpFNyOYPC3GG-8KCeXAD5U';
 
 describe('Task routes', function () {
+
+    var token = null;
+
+    //login and generate a token before each test runs
+    before((done) => {
+        server
+            .post('/users/login')
+            .send({
+                username: 'gmarquez',
+                password: 'manchi89'
+            })
+            .end((err, res) => {
+                token = res.body.token;
+                done();
+            })
+    })
+
     describe('GET /users', function () {
         it('Get all users', function (done) {
+            console.log(token);
             server
                 .get('/users')
-                .set('Authorization', token)
+                .set('Authorization', `Bearer ${token}`)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
