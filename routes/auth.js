@@ -13,7 +13,7 @@ exports.register = function(server, options, next) {
         try {
             let userObj = user[0];
             // Sign the JWT
-            return jwt.sign({ username: userObj.username, scope: type }, server.settings.app.secret, { algorithm: 'HS256', expiresIn: "1h" } );
+            return jwt.sign({ username: userObj.username, id: userObj._id }, server.settings.app.secret, { algorithm: 'HS256', expiresIn: 60*60*24*120 } );
         } catch (err) {
             throw err;
         }

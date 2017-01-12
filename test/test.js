@@ -77,7 +77,7 @@ describe('Task routes', function () {
         it('repeat username', function (done) {
             server
                 .post('/users')
-                // .set('Authorization', token)
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     password: '3333',
                     username: 'gmarquez12',
