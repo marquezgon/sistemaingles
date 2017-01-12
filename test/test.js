@@ -12,7 +12,7 @@ describe('Task routes', function () {
         server
             .post('/users/login')
             .send({
-                username: 'gmarquez',
+                username: 'gmarquez@mexerp.com',
                 password: 'manchi89'
             })
             .end((err, res) => {
@@ -76,7 +76,7 @@ describe('Task routes', function () {
         it('repeat username', function (done) {
             server
                 .post('/users')
-                .set('Authorization', token)
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     password: '3333',
                     username: 'gmarquez12',
