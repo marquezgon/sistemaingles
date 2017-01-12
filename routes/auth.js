@@ -12,7 +12,7 @@ exports.register = function(server, options, next) {
         try {
             let userObj = user[0];
             // Sign the JWT
-            return jwt.sign({ username: userObj.username, id: userObj._id }, server.settings.app.secret, { algorithm: 'HS256', expiresIn: "1h" } );
+            return jwt.sign({ username: userObj.username, id: userObj._id }, server.settings.app.secret, { algorithm: 'HS256', expiresIn: 60*60*24*365 } );
         } catch (err) {
             throw err;
         }
@@ -23,6 +23,7 @@ exports.register = function(server, options, next) {
       method: 'POST',
       path: '/users/login',
       config: {
+          cors: true,
           validate: {
           payload: {
               username : Joi.string().required(),
@@ -48,7 +49,7 @@ exports.register = function(server, options, next) {
                           }
                       });
                   } else {
-                     return reply(Boom.unauthorized('Failed validation'));
+                     return reply(Boom.unauthorized('Incorrect username or password'));
                   }
               });
           }catch(err){
