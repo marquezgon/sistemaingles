@@ -12,15 +12,16 @@ describe('Task routes', function () {
         server
             .post('/users/login')
             .send({
-                username: 'gmarquez',
+                username: 'gmarquez@mexerp.com',
                 password: 'manchi89'
             })
             .end((err, res) => {
                 token = res.body.token;
                 done();
             })
-    })
+    });
 
+    // validate all function of user`s module
     describe('GET /users', function () {
         it('Get all users', function (done) {
             console.log(token);
@@ -76,7 +77,7 @@ describe('Task routes', function () {
         it('repeat username', function (done) {
             server
                 .post('/users')
-                .set('Authorization', token)
+                // .set('Authorization', token)
                 .send({
                     password: '3333',
                     username: 'gmarquez12',
@@ -203,4 +204,66 @@ describe('Task routes', function () {
                 });
         });
     });
+
+    // end validation user`s model
+
+    // validate all function of quiz`s module
+   describe('GET /quiz', function () {
+        it('Get all quizes', function (done) {
+            console.log(token);
+            server
+                .get('/quiz')
+                .set('Authorization', `Bearer ${token}`)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    res.status.should.equal(200);
+                    done();
+                });
+        });
+    });
+    describe('POST /quiz', function () {
+        it('save  quiz', function (done) {
+            server
+                .post('/quiz')
+                .send({
+                    book: '58768988e048a822e7161332',
+                    section: '5876a4d4b02a3424c3dbee10,5876a514eba64e24c80b0348',
+                    student: '5877d5e24dfe6b2fbb73e743',
+                })
+                .expect("Content-type", /json/)
+                .expect(201)
+                .end(function (err, res) {
+                    res.status.should.equal(201);
+                    done();
+                });
+        });
+        it('missing data', function (done) {
+            server
+                .post('/users')
+                .send({
+                    password: '3333',
+                    lastname: 'test'
+                })
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+                    res.status.should.equal(400);
+                    done();
+                });
+        });
+    });
+    describe('DELETE /quiz/5877e78761456b31b9155ea7', function () {
+        it('delete a quiz', function (done) {
+            server
+                .delete('/quiz/5877e78761456b31b9155ea7')
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    res.status.should.equal(200);
+                    done();
+                });
+        });
+    });
+    // end validation quiz`s model
 });

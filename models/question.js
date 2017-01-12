@@ -1,12 +1,13 @@
 
-var mongoose = requiere('mongoose');
-var schema = mongoose.Schema;
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 var mongooseUniqueValidator = require('mongoose-unique-validator');
 
 var schema = new Schema({
     question: {type: String, required: true},
-    answer: {type: Date, required: true},
-    seccion: {type: Schema.Types.ObjectId, ref: 'Section'},
+    answer: {type: String, required: true},
+    section: {type: Schema.Types.ObjectId, ref: 'Section'},
+    book: {type: Schema.Types.ObjectId, ref: 'Book'},
     created: {type: Date, required: true},
     status: {type: Number, required: true},
 });

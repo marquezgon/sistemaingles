@@ -20,7 +20,8 @@ db.once('open', function callback() {
 // Create a server with a host and port
 const server = new Hapi.Server({
   app: {
-    secret: 'm3x3rp'
+    secret: 'm3x3rp',
+    SALT_WORK_FACTOR : 12
   }
 });
 
@@ -37,6 +38,10 @@ server.register(
     register: require('./plugins/auth')
   }, {
     register: require('./routes/user')
+  }, {
+    register: require('./routes/student')
+  }, {
+    register: require('./routes/quiz')
   }, {
     register: require('./routes/auth')
   }], (err) => {

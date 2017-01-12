@@ -1,10 +1,15 @@
 'use strict';
 
 const User = require('../models/user.js');
+const Student = require('../models/student.js');
 
 exports.register = function (server, options, next) {
     const validate = (request, decodedToken, callback) => {
-      User.findById(decodedToken.id, function(err, user) {
+      var table = User;
+      if(decodedToken.scope == 'student'){
+        table = Student;
+      }
+      table.find({username: decodedToken.username}, function(err, user) {
           if (!err) {
               if(user) {
                 return callback(null, true, decodedToken);

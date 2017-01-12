@@ -1,7 +1,6 @@
 
-var mongoose = requiere('mongoose');
-var schema = mongoose.Schema;
-var mongooseUniqueValidator = require('mongoose-unique-validator');
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
 var schema = new Schema({
     name: {type: String, required: true},
@@ -10,6 +9,5 @@ var schema = new Schema({
     status: {type: Number, required: true},
 });
 
-schema.plugin(mongooseUniqueValidator);
 
 module.exports = mongoose.model('Section', schema);

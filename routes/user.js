@@ -3,6 +3,10 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const User = require('../models/user.js');
+const Section = require('../models/section.js');
+const Book = require('../models/book.js');
+const Question = require('../models/question.js');
+const Quiz = require('../models/quiz.js');
 const Bcrypt = require('bcrypt');
 const SALT_WORK_FACTOR = 12;
 const jwt = require('jsonwebtoken');
@@ -28,7 +32,6 @@ function createHashUser(user, reply) {
 }
 
 exports.register = function (server, options, next) {
-
     //fetch all users
     server.route({
         method: 'GET',
@@ -196,6 +199,177 @@ exports.register = function (server, options, next) {
             });
         }
     });
+
+    //add book
+    server.route({
+        method: 'POST',
+        path: '/users/book',
+        config: {
+            validate: { // Validamos que el tenga el id
+            payload: {
+                name : Joi.string().required()
+            }
+          }
+        },
+        handler: function(request, reply) {
+        	Book.find({}, function(err, book) {
+               if (!err) {
+               		console.log(book);
+               }
+            });
+           	Book.find({ name : request.payload.name }, function(err, book) {
+               if (!err) {
+                   if(book.length == 0 ){
+                       	var newBook = Book({
+                         	name: request.payload.name,
+                         	status: (request.payload.status ? request.payload.status : 1),
+                         	created :  new Date()
+                       	});
+                   	 	newBook.save(function(err) {
+			                if (!err) {
+			                  	return reply(newBook);
+			                } else {
+			                  	throw err;
+		              	  	}
+		              	});
+
+                   } else {
+                       return reply(Boom.conflict('Duplicated book'));
+                   }
+               }else{
+               	return reply(Boom.badImplementation(err)); // 500 error
+               }
+            });
+        }
+    });
+
+    //get Books
+      server.route({
+        method: 'GET',
+        path: '/users/book',
+        handler: function(request, reply) {
+            Book.find( {} , function(err, book) {
+                if (!err) {
+                    return reply(book);
+                }
+                return reply(Boom.notFound('User not found')); // 404 error
+            });
+        }
+    });
+
+    //add Section
+        server.route({
+        method: 'POST',
+        path: '/users/section',
+        config: {
+          	validate: {
+            	payload: {
+               		name : Joi.string().required(),
+               		idBook : Joi.string().required(),
+           		}
+         	}
+       	},
+       	handler: function(request, reply) {
+           var payload = request.payload   // recivir parametros por post
+           Section.find({ name : payload.name, book : payload.idBook } , function(err, user) {
+               if (!err) {
+                   if(user.length == 0 ){
+                       var newSection = Section({
+                         name: payload.name,
+                         book : payload.idBook,
+                         status: (payload.status ? payload.status : 1),
+                         created :  new Date()
+                       });
+                       newSection.save(function(err) {
+			                if (!err) {
+			                  	return reply(newSection);
+			                } else {
+			                  	throw err;
+		              	  	}
+		              	});
+
+                   } else {
+                       return reply(Boom.conflict('Duplicated section'));
+                   }
+               }else{
+               		return reply(Boom.badImplementation(err)); // 500 error
+               }
+           });
+       	}
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/users/section',
+        handler: function(request, reply) {
+            Section.find( {} , function(err, section) {
+                if (!err) {
+                    return reply(section);
+                }
+                return reply(Boom.notFound('User not found')); // 404 error
+            });
+        }
+    });
+
+    //add questions
+    server.route({
+        method: 'POST',
+        path: '/users/question',
+        config: {
+          	validate: {
+            	payload: {
+               		question : Joi.string().required(),
+               		idSection : Joi.string().required(),
+               		idBook : Joi.string().required(),
+               		answer : Joi.string().required(),
+           		}
+         	}
+       	},
+       	handler: function(request, reply) {
+           var payload = request.payload   // recivir parametros por post
+           	Question.find({ question : payload.question, section : payload.idSection } , function(err, quiestion) {
+               if (!err) {
+                   if(quiestion.length == 0 ){
+                   	console.log(payload);
+                       var newQuestion = Question({
+                         question : payload.question,
+                         answer: payload.answer,
+                         section : payload.idSection,
+                         book : payload.idBook,
+                         status: (payload.status ? payload.status : 1),
+                         created :  new Date()
+                       });
+                       newQuestion.save(function(err) {
+			                if (!err) {
+			                  	return reply(newQuestion);
+			                } else {
+			                  	throw err;
+		              	  	}
+		              	});
+                   } else {
+                       return reply(Boom.conflict('Duplicated question'));
+                   }
+               }else{
+               		return reply(Boom.badImplementation(err)); // 500 error
+               }
+           });
+       	}
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/users/question',
+        handler: function(request, reply) {
+            Question.find( {} , function(err, question) {
+                if (!err) {
+                    return reply(question);
+                }
+                return reply(Boom.notFound('Questions not found')); // 404 error
+            });
+        }
+    });
+
+    //add questions
 
     return next();
 };
