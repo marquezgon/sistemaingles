@@ -1,7 +1,6 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var mongooseUniqueValidator = require('mongoose-unique-validator');
 
 var schema = new Schema({
     question: {type: String, required: true},
@@ -11,7 +10,5 @@ var schema = new Schema({
     created: {type: Date, required: true},
     status: {type: Number, required: true},
 });
-
-schema.plugin(mongooseUniqueValidator);
 
 module.exports = mongoose.model('Question', schema);

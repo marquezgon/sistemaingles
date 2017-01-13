@@ -6,7 +6,6 @@ var server = request.agent("http://localhost:8000");
 describe('Task routes', function () {
 
     var token = null;
-
     //login and generate a token before each test runs
     before((done) => {
         server
@@ -24,7 +23,7 @@ describe('Task routes', function () {
     // validate all function of user`s module
     describe('GET /users', function () {
         it('Get all users', function (done) {
-            console.log(token);
+            // console.log(token);
             server
                 .get('/users')
                 .set('Authorization', `Bearer ${token}`)
@@ -204,8 +203,8 @@ describe('Task routes', function () {
                 });
         });
     });
-
     // end validation user`s model
+
 
     // validate all function of quiz`s module
    describe('GET /quiz', function () {
@@ -266,4 +265,52 @@ describe('Task routes', function () {
         });
     });
     // end validation quiz`s model
+
+
+    // validate all function of teacher`s module
+    describe('POST /teacher', function () {
+        it('save  teacher', function (done) {
+            server
+                .post('/teacher')
+                .send({
+                    username: 'yo@yo.com',
+                    password: 'raul123',
+                    name: 'Raul',
+                    lastname: 'Mena',
+                })
+                .expect("Content-type", /json/)
+                .expect(201)
+                .end(function (err, res) {
+                    res.status.should.equal(201);
+                    done();
+                });
+        });
+        it('missing data', function (done) {
+            server
+                .post('/teacher')
+                .send({
+                    password: '3333',
+                    lastname: 'test'
+                })
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+                    res.status.should.equal(400);
+                    done();
+                });
+        });
+    });
+    describe('DELETE /quiz/5877e78761456b31b9155ea7', function () {
+        it('delete a teacher', function (done) {
+            server
+                .delete('/quiz/5877e78761456b31b9155ea7')
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    res.status.should.equal(200);
+                    done();
+                });
+        });
+    });
+    // end validation teacher`s model
 });

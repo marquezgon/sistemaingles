@@ -2,14 +2,12 @@
 
 const User = require('../models/user.js');
 const Student = require('../models/student.js');
+const Teacher = require('../models/teacher.js');
 
 exports.register = function (server, options, next) {
     const validate = (request, decodedToken, callback) => {
-      var table = User;
-      if(decodedToken.scope == 'student'){
-        table = Student;
-      }
-      table.find({username: decodedToken.username}, function(err, user) {
+      var typeUser = getUserType(decodedToken.scope);
+      typeUser.find({username: decodedToken.username}, function(err, user) {
           if (!err) {
               if(user) {
                 return callback(null, true, decodedToken);
@@ -27,6 +25,16 @@ exports.register = function (server, options, next) {
 
     return next();
 };
+
+function getUserType(scope) {
+  var table = User;
+  if(scope == 'student'){
+    table = Student;
+  }else if(scope == 'teacher'){
+    table = Teacher;
+  }
+  return table;
+}
 
 exports.register.attributes = {
     name: 'plugins-auth',

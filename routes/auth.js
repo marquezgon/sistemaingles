@@ -19,7 +19,7 @@ exports.register = function(server, options, next) {
         }
     }
 
-  //login super admin user
+  //login users
   server.route({
       method: 'POST',
       path: '/{type}/login',
@@ -40,6 +40,9 @@ exports.register = function(server, options, next) {
                 break;
             case 'student':
                 generateToken('student', Student, payload, reply);
+                break;
+            case 'teacher':
+                generateToken('teacher', Teacher, payload, reply);
                 break;
             default:
                 reply(Boom.notFound('Unknown route'));
