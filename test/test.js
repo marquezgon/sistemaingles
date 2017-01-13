@@ -205,7 +205,6 @@ describe('Task routes', function () {
     });
     // end validation user`s model
 
-
     // validate all function of quiz`s module
    describe('GET /quiz', function () {
         it('Get all quizes', function (done) {
@@ -266,14 +265,13 @@ describe('Task routes', function () {
     });
     // end validation quiz`s model
 
-
     // validate all function of teacher`s module
     describe('POST /teacher', function () {
         it('save  teacher', function (done) {
             server
                 .post('/teacher')
                 .send({
-                    username: 'yo@yo.com',
+                    username: 'yo@yo.com' + new Date().getTime(),
                     password: 'raul123',
                     name: 'Raul',
                     lastname: 'Mena',
@@ -300,10 +298,10 @@ describe('Task routes', function () {
                 });
         });
     });
-    describe('DELETE /quiz/5877e78761456b31b9155ea7', function () {
+    describe('DELETE /teacher/5877e78761456b31b9155ea7', function () {
         it('delete a teacher', function (done) {
             server
-                .delete('/quiz/5877e78761456b31b9155ea7')
+                .delete('/teacher/5877e78761456b31b9155ea7')
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
@@ -313,4 +311,46 @@ describe('Task routes', function () {
         });
     });
     // end validation teacher`s model
+
+    // validate all function of school`s module
+    describe('POST /school', function () {
+        it('save  school', function (done) {
+            server
+                .post('/school')
+                .send({
+                    name: 'Raul' + new Date().getTime(),
+                })
+                .expect("Content-type", /json/)
+                .expect(201)
+                .end(function (err, res) {
+                    res.status.should.equal(201);
+                    done();
+                });
+        });
+        it('missing data', function (done) {
+            server
+                .post('/school')
+                .send({
+                })
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+                    res.status.should.equal(400);
+                    done();
+                });
+        });
+    });
+    describe('DELETE /school/5877e78761456b31b9155ea7', function () {
+        it('delete a school', function (done) {
+            server
+                .delete('/school/5877e78761456b31b9155ea7')
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    res.status.should.equal(200);
+                    done();
+                });
+        });
+    });
+    // end validation school`s model
 });

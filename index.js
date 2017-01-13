@@ -43,6 +43,8 @@ server.register(
   }, {
     register: require('./routes/teacher')
   }, {
+    register: require('./routes/school')
+  }, {
     register: require('./routes/quiz')
   }, {
     register: require('./routes/auth')
