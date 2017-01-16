@@ -7,6 +7,7 @@ var schema = new Schema({
     book: {type: Schema.Types.ObjectId, ref: 'Book'},
     student : { type: mongoose.Schema.Types.ObjectId, ref: 'Student'},
     description : {type: String},
+    title : {type: String, required: true},
     created: {type: Date, required: true},
     status: {type: Number, required: true}
 });

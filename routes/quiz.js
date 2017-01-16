@@ -21,6 +21,7 @@ exports.register = function (server, options, next) {
                section : Joi.string().optional(),
                description : Joi.string().max(40).optional(),
                student : Joi.string().required(),
+               title : Joi.string().required(),
                questions : Joi.number().integer().min(1).optional(),
             }
           },
@@ -56,6 +57,7 @@ exports.register = function (server, options, next) {
               book: request.payload.book,
               description: request.payload.description,
               student : request.payload.student,
+              title : request.payload.title,
               created: new Date(),
               status: 1
             });
