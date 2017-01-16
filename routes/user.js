@@ -38,6 +38,7 @@ exports.register = function (server, options, next) {
         path: '/users',
         config: {
           auth : {
+            scope : ['admin'],
             strategy: 'jwt',
             mode: 'required'
           }
@@ -79,6 +80,11 @@ exports.register = function (server, options, next) {
                password : Joi.string().required(),
                lastname : Joi.string().required(),
            }
+         },
+         auth : {
+           scope : ['admin'],
+           strategy: 'jwt',
+           mode: 'required'
          }
        },
        handler: function(request, reply) {
@@ -121,6 +127,11 @@ exports.register = function (server, options, next) {
              params : {
                  id : Joi.string().required(),
              }
+          },
+          auth : {
+            scope : ['admin'],
+            strategy: 'jwt',
+            mode: 'required'
           }
         },
        handler: function(request, reply) {
@@ -161,6 +172,11 @@ exports.register = function (server, options, next) {
             params : {
                 id : Joi.string().required(),
             }
+          },
+          auth : {
+            scope : ['admin'],
+            strategy: 'jwt',
+            mode: 'required'
           }
         },
         handler: function(request, reply) {
@@ -182,10 +198,15 @@ exports.register = function (server, options, next) {
         method: 'DELETE',
         path: '/users/{id}',
         config: {
-            validate: { // Validamos que el tenga el id
+          validate: { // Validamos que el tenga el id
             params: {
                 id : Joi.string().required()
             }
+          },
+          auth : {
+            scope : ['admin'],
+            strategy: 'jwt',
+            mode: 'required'
           }
         },
         handler: function(request, reply) {
@@ -205,10 +226,15 @@ exports.register = function (server, options, next) {
         method: 'POST',
         path: '/users/book',
         config: {
-            validate: { // Validamos que el tenga el id
+          validate: { // Validamos que el tenga el id
             payload: {
                 name : Joi.string().required()
             }
+          },
+          auth : {
+            scope : ['admin'],
+            strategy: 'jwt',
+            mode: 'required'
           }
         },
         handler: function(request, reply) {
@@ -247,6 +273,13 @@ exports.register = function (server, options, next) {
       server.route({
         method: 'GET',
         path: '/users/book',
+        config: {
+          auth : {
+            scope : ['admin'],
+            strategy: 'jwt',
+            mode: 'required'
+          }
+        },
         handler: function(request, reply) {
             Book.find( {} , function(err, book) {
                 if (!err) {
@@ -262,12 +295,17 @@ exports.register = function (server, options, next) {
         method: 'POST',
         path: '/users/section',
         config: {
-          	validate: {
-            	payload: {
-               		name : Joi.string().required(),
-               		idBook : Joi.string().required(),
-           		}
-         	}
+        	validate: {
+          	payload: {
+             		name : Joi.string().required(),
+             		idBook : Joi.string().required(),
+         		}
+         	},
+          auth : {
+            scope : ['admin'],
+            strategy: 'jwt',
+            mode: 'required'
+          } 
        	},
        	handler: function(request, reply) {
            var payload = request.payload   // recivir parametros por post
@@ -323,7 +361,12 @@ exports.register = function (server, options, next) {
                		idBook : Joi.string().required(),
                		answer : Joi.string().required(),
            		}
-         	}
+         	},
+           auth : {
+            scope : ['admin'],
+            strategy: 'jwt',
+            mode: 'required'
+          } 
        	},
        	handler: function(request, reply) {
            var payload = request.payload   // recivir parametros por post
@@ -359,6 +402,13 @@ exports.register = function (server, options, next) {
     server.route({
         method: 'GET',
         path: '/users/question',
+        config : {
+           auth : {
+            scope : ['admin'],
+            strategy: 'jwt',
+            mode: 'required'
+          } 
+        },
         handler: function(request, reply) {
             Question.find( {} , function(err, question) {
                 if (!err) {

@@ -15,15 +15,20 @@ exports.register = function (server, options, next) {
         method: 'POST',
         path: '/quiz',
         config: {
-         validate: {
+          validate: {
             payload: {
                book : Joi.string().required(),
                section : Joi.string().optional(),
                description : Joi.string().max(40).optional(),
                student : Joi.string().required(),
                questions : Joi.number().integer().min(1).optional(),
-           }
-         }
+            }
+          },
+          auth : {
+            scope : ['admin', 'student'],
+            strategy: 'jwt',
+            mode: 'required'
+          }
         },
         handler: function(request, reply) {
         	var filter = { book : request.payload.book };
@@ -71,18 +76,22 @@ exports.register = function (server, options, next) {
       path: '/quiz',
       config: {
         auth : {
-          scope: 'student',
+          scope : ['admin', 'student'],
           strategy: 'jwt',
           mode: 'required'
         }
       },
       handler: function(request, reply) {
-          Quiz.find( { student : request.auth.credentials.id } , function(err, quizes) {// Se ejecuta la busqueda sin parametros ya que se requieren todos los registros
-              if (!err) {
-                  return reply(quizes);//retornamos un arreglo con todos los objetos de la base de datos
-              }
-              return reply(Boom.badImplementation(err));
-          });
+        var filter = {};
+        if(request.auth.credentials.scope == 'student'){
+          filter = { student : request.auth.credentials.id };
+        }
+        Quiz.find( filter , function(err, quizes) {// Se ejecuta la busqueda sin parametros ya que se requieren todos los registros
+            if (!err) {
+                return reply(quizes);//retornamos un arreglo con todos los objetos de la base de datos
+            }
+            return reply(Boom.badImplementation(err));
+        });
       }
     });
 
@@ -95,6 +104,11 @@ exports.register = function (server, options, next) {
             params: {
                 id : Joi.string().required()
             }
+          },
+          auth : {
+            scope : ['admin', 'student'],
+            strategy: 'jwt',
+            mode: 'required'
           }
         },
         handler: function(request, reply) {

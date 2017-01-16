@@ -34,14 +34,19 @@ exports.register = function (server, options, next) {
         method: 'POST',
         path: '/student',
         config: {
-         validate: {
+          validate: {
             payload: {
                name : Joi.string().required(),
                username : Joi.string().required(),
                password : Joi.string().required(),
                lastname : Joi.string().required(),
-           }
-         }
+            }
+          }, 
+          auth : {
+            scope : ['admin', 'student'],
+            strategy: 'jwt',
+            mode: 'required'
+          }
         },
         handler: function(request, reply) {
         	var payload = request.payload   // recivir parametros por post
@@ -83,6 +88,11 @@ exports.register = function (server, options, next) {
              params : {
                  id : Joi.string().required(),
              }
+          },
+          auth : {
+            scope : ['admin', 'student'],
+            strategy: 'jwt',
+            mode: 'required'
           }
         },
        handler: function(request, reply) {
@@ -117,6 +127,7 @@ exports.register = function (server, options, next) {
         path: '/student',
         config: {
           auth : {
+            scope : ['admin', 'student'],
             strategy: 'jwt',
             mode: 'required'
           }
@@ -138,10 +149,15 @@ exports.register = function (server, options, next) {
         path: '/student/{id}',
         config: {
             validate: { // Validamos que el tenga el id
-            params: {
-                id : Joi.string().required()
+              params: {
+                  id : Joi.string().required()
+              }
+            }, 
+            auth : {
+              scope : ['admin', 'student'],
+              strategy: 'jwt',
+              mode: 'required'
             }
-          }
         },
         handler: function(request, reply) {
             Student.findOneAndRemove({ _id : request.params.id }, function(err) {//buscamos el registro por su id i depues se eliminda

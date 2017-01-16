@@ -40,7 +40,12 @@ exports.register = function (server, options, next) {
                password : Joi.string().required(),
                lastname : Joi.string().required(),
            }
-         }
+         },
+          auth : {
+            scope : ['admin' , 'teacher'],
+            strategy: 'jwt',
+            mode: 'required'
+          }
         },
         handler: function(request, reply) {
         	var payload = request.payload   // recivir parametros por post
@@ -71,6 +76,7 @@ exports.register = function (server, options, next) {
         path: '/teacher',
         config: {
           auth : {
+            scope : ['admin' , 'teacher'],
             strategy: 'jwt',
             mode: 'required'
           }
@@ -90,10 +96,15 @@ exports.register = function (server, options, next) {
         method: 'DELETE',
         path: '/teacher/{id}',
         config: {
-            validate: { // Validamos que el tenga el id
+          validate: { // Validamos que el tenga el id
             params: {
                 id : Joi.string().required()
             }
+          },
+          auth : {
+            scope : ['admin' , 'teacher'],
+            strategy: 'jwt',
+            mode: 'required'
           }
         },
         handler: function(request, reply) {
@@ -122,6 +133,11 @@ exports.register = function (server, options, next) {
              params : {
                  id : Joi.string().required(),
              }
+          },
+          auth : {
+            scope : ['admin' , 'teacher'],
+            strategy: 'jwt',
+            mode: 'required'
           }
         },
        handler: function(request, reply) {

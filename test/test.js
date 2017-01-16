@@ -75,6 +75,7 @@ describe('Task routes', function () {
         it('save  user', function (done) {
             server
                 .post('/users')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     password: '3333',
                     username: 'noTesta'+new Date().getTime(),
@@ -108,6 +109,7 @@ describe('Task routes', function () {
         it('missing data', function (done) {
             server
                 .post('/users')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     password: '3333',
                     lastname: 'test'
@@ -124,6 +126,7 @@ describe('Task routes', function () {
         it('delete a user', function (done) {
             server
                 .delete('/users/586ea5a2a08587e7af0b2fc9')
+                .set('Authorization', `Bearer ${token}`)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
@@ -136,6 +139,7 @@ describe('Task routes', function () {
         it('update  user', function (done) {
             server
                 .put('/users/5857ff6c8c4086042c1f8f21')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     password: '33334',
                     username: 'test2',
@@ -152,6 +156,7 @@ describe('Task routes', function () {
         it('missing data', function (done) {
             server
                 .put('/users/5857ff6c8c4086042c1f8f21')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     password: '3333',
                     username: 'test2',
@@ -166,6 +171,7 @@ describe('Task routes', function () {
         it('user not exist', function (done) {
             server
                 .put('/users/5857ff6c8c40asds86042c1f8f22')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                    password: '3333',
                     username: 'test2',
@@ -184,6 +190,7 @@ describe('Task routes', function () {
         it('update user password', function (done) {
             server
                 .patch('/users/5857ff6c8c4086042c1f8f21')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     password: '1234567',
                 })
@@ -197,6 +204,7 @@ describe('Task routes', function () {
         it('missing data', function (done) {
             server
                 .patch('/users/5857ff6c8c4086042c1f8f21')
+                .set('Authorization', `Bearer ${token}`)
                 .expect("Content-type", /json/)
                 .expect(400)
                 .end(function (err, res) {
@@ -207,6 +215,7 @@ describe('Task routes', function () {
         it('user does not exist', function (done) {
             server
                 .patch('/users/5857ff6c8c4086042c1f8f28')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                    password: '3333'
                 })
@@ -238,6 +247,7 @@ describe('Task routes', function () {
         it('save  quiz', function (done) {
             server
                 .post('/quiz')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     book: '58768988e048a822e7161332',
                     section: '5876a4d4b02a3424c3dbee10,5876a514eba64e24c80b0348',
@@ -253,6 +263,7 @@ describe('Task routes', function () {
         it('missing data', function (done) {
             server
                 .post('/users')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     password: '3333',
                     lastname: 'test'
@@ -269,6 +280,7 @@ describe('Task routes', function () {
         it('delete a quiz', function (done) {
             server
                 .delete('/quiz/5877e78761456b31b9155ea7')
+                .set('Authorization', `Bearer ${token}`)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
@@ -284,6 +296,7 @@ describe('Task routes', function () {
         it('save  teacher', function (done) {
             server
                 .post('/teacher')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     username: 'yo@yo.com' + new Date().getTime(),
                     password: 'raul123',
@@ -300,6 +313,7 @@ describe('Task routes', function () {
         it('missing data', function (done) {
             server
                 .post('/teacher')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     password: '3333',
                     lastname: 'test'
@@ -316,6 +330,7 @@ describe('Task routes', function () {
         it('delete a teacher', function (done) {
             server
                 .delete('/teacher/5877e78761456b31b9155ea7')
+                .set('Authorization', `Bearer ${token}`)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
@@ -331,6 +346,7 @@ describe('Task routes', function () {
         it('save  school', function (done) {
             server
                 .post('/school')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     name: 'Raul' + new Date().getTime(),
                 })
@@ -344,6 +360,7 @@ describe('Task routes', function () {
         it('missing data', function (done) {
             server
                 .post('/school')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                 })
                 .expect("Content-type", /json/)
@@ -358,6 +375,7 @@ describe('Task routes', function () {
         it('delete a school', function (done) {
             server
                 .delete('/school/5877e78761456b31b9155ea7')
+                .set('Authorization', `Bearer ${token}`)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {

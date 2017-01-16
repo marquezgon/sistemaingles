@@ -13,36 +13,41 @@ exports.register = function (server, options, next) {
         method: 'POST',
         path: '/school',
         config: {
-         validate: {
-            payload: {
-               name : Joi.string().required(),
-           }
-         }
+         	validate: {
+	            payload: {
+	               name : Joi.string().required(),
+	           	}
+         	},
+          	auth : {
+          		scope : ['admin', 'teacher'],
+	            strategy: 'jwt',
+	            mode: 'required'
+          	}
         },
         handler: function(request, reply) {
         	var payload = request.payload   // recivir parametros por post
-           School.find({ name : payload.name }, function(err, school) {
-               if (!err) {
-                   if(school.length == 0 ){
-                       var newschool = School({
-                         name: payload.name,
-                         status: (payload.status ? payload.status : 1),
-                         created :  new Date()
-                       });
-                       newschool.save(function(err) {
-                       if (!err){
-                           return reply(newschool).code(201);
-                       }else{
-                           return reply(Boom.unauthorized('Invalid data. ' + err.message));
-                       }
-                   });
-                   } else {
-                       return reply(Boom.conflict('Duplicated username'));
-                   }
-               }else{
-               		return reply(Boom.badImplementation(err)); // 500 error
-               }
-           });
+           	School.find({ name : payload.name }, function(err, school) {
+               	if (!err) {
+                   	if(school.length == 0 ){
+                       	var newschool = School({
+                         	name: payload.name,
+                         	status: (payload.status ? payload.status : 1),
+                         	created :  new Date()
+                       	});
+                       	newschool.save(function(err) {
+                       	if (!err){
+                           	return reply(newschool).code(201);
+                       	}else{
+                           	return reply(Boom.unauthorized('Invalid data. ' + err.message));
+                       	}
+               		});
+                   	} else {
+                       	return reply(Boom.conflict('Duplicated username'));
+                   	}
+               	}else{
+           			return reply(Boom.badImplementation(err)); // 500 error
+               	}
+           	});
         }
     });
 
@@ -50,10 +55,11 @@ exports.register = function (server, options, next) {
         method: 'GET',
         path: '/school',
         config: {
-          // auth : {
-          //   strategy: 'jwt',
-          //   mode: 'required'
-          // }
+          auth : {
+          	scope : ['admin', 'teacher'],
+            strategy: 'jwt',
+            mode: 'required'
+          }
         },
         handler: function(request, reply) {
             School.find({}, function(err, school) {// Se ejecuta la busqueda sin parametros ya que se requieren todos los registros
@@ -71,10 +77,15 @@ exports.register = function (server, options, next) {
         path: '/school/{id}',
         config: {
             validate: { // Validamos que el tenga el id
-            params: {
-                id : Joi.string().required()
-            }
-          }
+	            params: {
+	                id : Joi.string().required()
+	            }
+          	}, 
+          	auth : {
+          		scope : ['admin', 'teacher'],
+	            strategy: 'jwt',
+	            mode: 'required'
+          	}
         },
         handler: function(request, reply) {
             School.findOneAndRemove({ _id : request.params.id }, function(err) {//buscamos el registro por su id i depues se eliminda
@@ -92,14 +103,19 @@ exports.register = function (server, options, next) {
         method: 'PUT',
         path: '/school/{id}',
         config: {
-          validate: {// se hacen las validaciones necesarias, el password se queda como opcional ya que puede no venir
-             payload: {
-                 name : Joi.string().required(),
-             },
-             params : {
-                 id : Joi.string().required(),
-             }
-          }
+          	validate: {// se hacen las validaciones necesarias, el password se queda como opcional ya que puede no venir
+	             payload: {
+	                 name : Joi.string().required(),
+	             },
+	             params : {
+	                 id : Joi.string().required(),
+	             }
+          	},
+          	auth : {
+          	  	scope : ['admin', 'teacher'],
+          	  	strategy: 'jwt',
+          	  	mode: 'required'
+          	}
         },
        handler: function(request, reply) {
            var payload = request.payload   // recivir parametros por post
