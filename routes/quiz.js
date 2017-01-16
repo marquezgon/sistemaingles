@@ -19,6 +19,7 @@ exports.register = function (server, options, next) {
             payload: {
                book : Joi.string().required(),
                section : Joi.string().optional(),
+               description : Joi.string().max(40).optional(),
                student : Joi.string().required(),
                questions : Joi.number().integer().min(1).optional(),
            }
@@ -38,7 +39,7 @@ exports.register = function (server, options, next) {
         	}
          	Questions.find(filter, function (err, questions) {
             if (err) {
-              throw err;
+              return reply(Boom.badRequest('invalid params'));
             }
 
             var sects = [];
@@ -48,6 +49,7 @@ exports.register = function (server, options, next) {
             var newQuiz = Quiz({
               questions: sects,
               book: request.payload.book,
+              description: request.payload.description,
               student : request.payload.student,
               created: new Date(),
               status: 1
@@ -68,13 +70,14 @@ exports.register = function (server, options, next) {
       method: 'GET',
       path: '/quiz',
       config: {
-        // auth : {
-        //   strategy: 'jwt',
-        //   mode: 'required'
-        // }
+        auth : {
+          scope: 'student',
+          strategy: 'jwt',
+          mode: 'required'
+        }
       },
       handler: function(request, reply) {
-          Quiz.find({}, function(err, quizes) {// Se ejecuta la busqueda sin parametros ya que se requieren todos los registros
+          Quiz.find( { student : request.auth.credentials.id } , function(err, quizes) {// Se ejecuta la busqueda sin parametros ya que se requieren todos los registros
               if (!err) {
                   return reply(quizes);//retornamos un arreglo con todos los objetos de la base de datos
               }
@@ -104,7 +107,6 @@ exports.register = function (server, options, next) {
             });
         }
     });
-
     
     return next();
 };

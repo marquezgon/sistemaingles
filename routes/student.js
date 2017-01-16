@@ -52,6 +52,7 @@ exports.register = function (server, options, next) {
                          name: payload.name,
                          lastname: payload.lastname,
                          username: payload.username,
+                         scope : 'student',
                          password: payload.password,
                          status: (payload.status ? payload.status : 1),
                          created :  new Date()
@@ -67,14 +68,58 @@ exports.register = function (server, options, next) {
         }
     });
 
+        //update user record
+    server.route({
+        method: 'PUT',
+        path: '/student/{id}',
+        config: {
+          validate: {// se hacen las validaciones necesarias, el password se queda como opcional ya que puede no venir
+             payload: {
+                 name : Joi.string().required(),
+                 username : Joi.string().required(),
+                 lastname : Joi.string().required(),
+                 password : Joi.string().optional(),
+             },
+             params : {
+                 id : Joi.string().required(),
+             }
+          }
+        },
+       handler: function(request, reply) {
+           var payload = request.payload   // recivir parametros por post
+           Student.findById( request.params.id , function(err, student) {
+               if (student) {//si se encuentra el usuario, se setea con sus nuevos valores
+                   student.name = payload.name;
+                   student.username = payload.username;
+                   student.lastname = payload.lastname;
+                   student.scope = 'student';
+                   if(payload.password){//si el password llega, se encripta y se guarda
+                     student.password = payload.password;
+                     createHash(student, reply);
+                   } else {
+                        student.save(function(err) {
+                           if (!err){
+                               return reply(student);
+                           }else{
+                               return reply(Boom.unauthorized('Invalid data. ' + err.message));
+                           }
+                       });
+                   }
+               }else{
+                   return reply(Boom.notFound('student not found'));
+               }
+           });
+       }
+    });
+
     server.route({
         method: 'GET',
         path: '/student',
         config: {
-          // auth : {
-          //   strategy: 'jwt',
-          //   mode: 'required'
-          // }
+          auth : {
+            strategy: 'jwt',
+            mode: 'required'
+          }
         },
         handler: function(request, reply) {
             Student.find({}, function(err, student) {// Se ejecuta la busqueda sin parametros ya que se requieren todos los registros
@@ -86,6 +131,28 @@ exports.register = function (server, options, next) {
         }
     });
 
+
+    //delete given teacher
+    server.route({
+        method: 'DELETE',
+        path: '/student/{id}',
+        config: {
+            validate: { // Validamos que el tenga el id
+            params: {
+                id : Joi.string().required()
+            }
+          }
+        },
+        handler: function(request, reply) {
+            Student.findOneAndRemove({ _id : request.params.id }, function(err) {//buscamos el registro por su id i depues se eliminda
+                if (!err) {
+                  return reply({message : 'Student deleted'})
+                }else{
+                  return reply(Boom.notFound('Student not found'));// en caso de no encotrarlo se regresa el status not found
+                }
+            });
+        }
+    });
 
     return next();
 };

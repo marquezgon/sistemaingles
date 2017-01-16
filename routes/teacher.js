@@ -52,6 +52,7 @@ exports.register = function (server, options, next) {
                          lastname: payload.lastname,
                          username: payload.username,
                          password: payload.password,
+                         scope : 'teacher',
                          status: (payload.status ? payload.status : 1),
                          created :  new Date()
                        });
@@ -130,6 +131,7 @@ exports.register = function (server, options, next) {
                    teacher.name = payload.name;
                    teacher.username = payload.username;
                    teacher.lastname = payload.lastname;
+                   teacher.scope = 'teacher';
                    if(payload.password){//si el password llega, se encripta y se guarda
                      teacher.password = payload.password;
                      createHash(teacher, reply);

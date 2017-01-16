@@ -9,11 +9,11 @@ const Teacher = require('../models/teacher.js');
 const jwt = require('jsonwebtoken');
 
 exports.register = function(server, options, next) {
-    const createToken = function (user, type) {
+    const createToken = function (user) {
         try {
             let userObj = user[0];
             // Sign the JWT
-            return jwt.sign({ username: userObj.username, id: userObj._id }, server.settings.app.secret, { algorithm: 'HS256', expiresIn: 60*60*24*120 } );
+            return jwt.sign({ username: userObj.username, id : userObj._id , scope : userObj.scope  }, server.settings.app.secret, { algorithm: 'HS256', expiresIn: 60*60*24*120 } );
         } catch (err) {
             throw err;
         }
@@ -36,13 +36,13 @@ exports.register = function(server, options, next) {
           const userType = request.params.type;
           switch(userType) {
             case 'users':
-                generateToken('user', User, payload, reply);
+                generateToken(User, payload, reply);
                 break;
             case 'student':
-                generateToken('student', Student, payload, reply);
+                generateToken(Student, payload, reply);
                 break;
             case 'teacher':
-                generateToken('teacher', Teacher, payload, reply);
+                generateToken(Teacher, payload, reply);
                 break;
             default:
                 reply(Boom.notFound('Unknown route'));
@@ -52,7 +52,7 @@ exports.register = function(server, options, next) {
 
   return next();
 
-  function generateToken(typeUser, typeObject, payload, reply) {
+  function generateToken(typeObject, payload, reply) {
     try{
       typeObject.find({username : payload.username }, function(err, user) {//Se ejecuta la busqueda con el parametro de username
         if (err) throw err;
@@ -62,7 +62,7 @@ exports.register = function(server, options, next) {
                    return reply(Boom.badImplementation(err)); // 500 error
               } else{
                 if(isMatch){// isMatch indica si los passwords son iguales o no
-                  return reply({ token: createToken(user, typeUser) }).code(201);
+                  return reply({ token: createToken(user) }).code(201);
                 } else{
                   return reply(Boom.unauthorized('Incorrect username or password'));
                 }
