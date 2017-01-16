@@ -20,6 +20,21 @@ describe('Task routes', function () {
             })
     });
 
+    var tokenStudent = null;
+    //login and generate a token before each test runs
+    before((done) => {
+        server
+            .post('/student/login')
+            .send({
+                username: 'rmena',
+                password: 'manchi89'
+            })
+            .end((err, res) => {
+                tokenStudent = res.body.token;
+                done();
+            })
+    });
+
     // validate all function of user`s module
     describe('GET /users', function () {
         it('Get all users', function (done) {
@@ -208,10 +223,9 @@ describe('Task routes', function () {
     // validate all function of quiz`s module
    describe('GET /quiz', function () {
         it('Get all quizes', function (done) {
-            console.log(token);
             server
                 .get('/quiz')
-                .set('Authorization', `Bearer ${token}`)
+                .set('Authorization', `Bearer ${tokenStudent}`)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
