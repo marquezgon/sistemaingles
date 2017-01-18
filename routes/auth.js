@@ -29,6 +29,10 @@ exports.register = function(server, options, next) {
             username : Joi.string().required(),
             password : Joi.string().required(),
           }
+        },
+        cors: {
+            origin: ['*'],
+            additionalHeaders: ['cache-control', 'x-requested-with']
         }
       },
       handler: function(request, reply) {
@@ -69,7 +73,7 @@ exports.register = function(server, options, next) {
               }
             });
           } else {
-           return reply(Boom.unauthorized('Failed validation'));
+           return reply(Boom.unauthorized('Incorrect username or password'));
           }
         });
     }catch(err){

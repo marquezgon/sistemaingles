@@ -3,7 +3,13 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-    questions: [{ text: {type: String}, idQuestion: { type: mongoose.Schema.Types.ObjectId, ref: 'Question'}, idSection: { type: mongoose.Schema.Types.ObjectId, ref: 'Section'}}],
+    questions: [{ 
+    	text: {type: String},
+    	idQuestion: { type: mongoose.Schema.Types.ObjectId, ref: 'Question'}, 
+    	idSection: { type: mongoose.Schema.Types.ObjectId, ref: 'Section'},
+    	answer : { type : String},
+    	StudentAnswer : {type : String}
+    }],
     book: {type: Schema.Types.ObjectId, ref: 'Book'},
     student : { type: mongoose.Schema.Types.ObjectId, ref: 'Student'},
     description : {type: String},

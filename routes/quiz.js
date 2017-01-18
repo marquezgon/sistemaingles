@@ -50,7 +50,7 @@ exports.register = function (server, options, next) {
 
             var sects = [];
             questions.forEach(function(question) {
-              sects.push({ text : question.question, idQuestion : question._id, idSection : question.section });
+              sects.push({ text : question.question, idQuestion : question._id, idSection : question.section, answer : question.answer, StudentAnswer : '' });
             });
             var newQuiz = Quiz({
               questions: sects,
