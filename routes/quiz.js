@@ -98,18 +98,29 @@ exports.register = function (server, options, next) {
                         return reply(Boom.badRequest('invalid params'));
                       }
 
-                var arrTemp = [];
+                var arrTempId = [];
+                var arrTempNom = [];
                 var bookSection = [];
-                var response = {};
-                
+                var content = [];
+                var response = [];
                   section.forEach(function(sectionAndBook) {
-                          if(arrTemp.indexOf(sectionAndBook.book.id) == '-1'){
-                            arrTemp.push(sectionAndBook.book.id);
-                    bookSection = []; 
-                          }
-                          bookSection.push(sectionAndBook);
-                          response[sectionAndBook.book.name] = bookSection;
-                      });
+                   if(arrTempId.indexOf(sectionAndBook.book.id) == '-1'){
+                      arrTempId.push(sectionAndBook.book.id);
+                      arrTempNom.push(sectionAndBook.book.name);
+                      bookSection = []; 
+                    }
+                    bookSection.push(sectionAndBook);
+                    content[sectionAndBook.book.id] = bookSection;
+                  });
+
+                  for (var i = 0; i < arrTempId.length; i++) {
+                    response[i] = {book : {
+                        id : arrTempId[i],
+                        name : arrTempNom[i]
+                      },
+                      sections : content[arrTempId[i]]
+                    }
+                  }
                   return reply({sectionAndBooks : response, quizes : quizes});//retornamos un arreglo con todos los objetos de la base de datos
               });
             }else{
@@ -119,7 +130,7 @@ exports.register = function (server, options, next) {
       }
     });
 
-        //delete given quiz
+    //delete given quiz
     server.route({
         method: 'DELETE',
         path: '/quiz/{id}',
