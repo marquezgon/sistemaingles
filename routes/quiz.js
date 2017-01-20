@@ -90,9 +90,31 @@ exports.register = function (server, options, next) {
         }
         Quiz.find( filter , function(err, quizes) {// Se ejecuta la busqueda sin parametros ya que se requieren todos los registros
             if (!err) {
-                return reply(quizes);//retornamos un arreglo con todos los objetos de la base de datos
+              Section.find({})
+              .populate('book', 'name')
+              .sort({book: 1})
+              .exec(function (err, section) {
+                if (err) {
+                        return reply(Boom.badRequest('invalid params'));
+                      }
+
+                var arrTemp = [];
+                var bookSection = [];
+                var response = {};
+                
+                  section.forEach(function(sectionAndBook) {
+                          if(arrTemp.indexOf(sectionAndBook.book.id) == '-1'){
+                            arrTemp.push(sectionAndBook.book.id);
+                    bookSection = []; 
+                          }
+                          bookSection.push(sectionAndBook);
+                          response[sectionAndBook.book.name] = bookSection;
+                      });
+                  return reply({sectionAndBooks : response, quizes : quizes});//retornamos un arreglo con todos los objetos de la base de datos
+              });
+            }else{
+              return reply(Boom.badImplementation(err));
             }
-            return reply(Boom.badImplementation(err));
         });
       }
     });
