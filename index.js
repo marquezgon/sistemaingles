@@ -45,6 +45,8 @@ server.register(
   }, {
     register: require('./routes/school')
   }, {
+    register: require('./routes/book')
+  }, {
     register: require('./routes/quiz')
   }, {
     register: require('./routes/auth')

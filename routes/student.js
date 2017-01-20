@@ -130,6 +130,10 @@ exports.register = function (server, options, next) {
             scope : ['admin', 'student'],
             strategy: 'jwt',
             mode: 'required'
+          },
+          cors: {
+              origin: ['*'],
+              additionalHeaders: ['cache-control', 'x-requested-with']
           }
         },
         handler: function(request, reply) {

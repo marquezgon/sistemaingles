@@ -26,7 +26,7 @@ describe('Task routes', function () {
         server
             .post('/student/login')
             .send({
-                username: 'rmena',
+                username: 'rmena@mexerp.com',
                 password: 'manchi89'
             })
             .end((err, res) => {
@@ -252,6 +252,7 @@ describe('Task routes', function () {
                     book: '58768988e048a822e7161332',
                     section: '5876a4d4b02a3424c3dbee10,5876a514eba64e24c80b0348',
                     student: '5877d5e24dfe6b2fbb73e743',
+                    title: 'test',
                 })
                 .expect("Content-type", /json/)
                 .expect(201)
@@ -375,6 +376,22 @@ describe('Task routes', function () {
         it('delete a school', function (done) {
             server
                 .delete('/school/5877e78761456b31b9155ea7')
+                .set('Authorization', `Bearer ${token}`)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    res.status.should.equal(200);
+                    done();
+                });
+        });
+    });
+    // end validation school`s model
+
+    // validate all function of book`s module
+    describe('Get /book/sections', function () {
+        it('get the book´s sections', function (done) {
+            server
+                .get('/book/sections')
                 .set('Authorization', `Bearer ${token}`)
                 .expect("Content-type", /json/)
                 .expect(200)
