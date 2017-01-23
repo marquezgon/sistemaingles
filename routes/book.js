@@ -19,7 +19,7 @@ exports.register = function (server, options, next) {
               origin: ['*'],
               additionalHeaders: ['cache-control', 'x-requested-with']
           }
-      },
+        },
         handler: function(request, reply) {
             Section.find({})
 			.populate('book', 'name')
@@ -32,11 +32,11 @@ exports.register = function (server, options, next) {
 				var arrTemp = [];
 				var bookSection = [];
 				var response = {};
-				
+
 			  	section.forEach(function(sectionAndBook) {
 	              	if(arrTemp.indexOf(sectionAndBook.book.id) == '-1'){
 		              	arrTemp.push(sectionAndBook.book.id);
-						bookSection = []; 
+						bookSection = [];
 	              	}
 	              	bookSection.push(sectionAndBook);
 	              	response[sectionAndBook.book.name] = bookSection;

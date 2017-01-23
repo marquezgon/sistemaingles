@@ -18,11 +18,10 @@ exports.register = function (server, options, next) {
           validate: {
             payload: {
                book : Joi.string().required(),
-               section : Joi.string().optional(),
+               section : Joi.array().single().required(),
                description : Joi.string().max(40).optional(),
-               student : Joi.string().required(),
-               title : Joi.string().required(),
-               questions : Joi.number().integer().min(1).optional(),
+               title : Joi.string().max(25).required(),
+               questions : Joi.number().integer().required(),
             }
           },
           auth : {
@@ -33,30 +32,29 @@ exports.register = function (server, options, next) {
         },
         handler: function(request, reply) {
         	var filter = { book : request.payload.book };
+            const studentId = request.auth.credentials.id;
         	if(request.payload.section){
-            var arrasySection = request.payload.section.split(',');
-            var arrSectionFilter = [];
-            for (var i = 0; i < arrasySection.length; i++) {
-              if(arrasySection[i].trim()){
-                arrSectionFilter.push(arrasySection[i].trim());
-              }
-            }
-        		filter = { section: { $in : arrSectionFilter } , book : request.payload.book };
+                const arrSection = request.payload.section;
+                const arrFilter = arrSection.map((section) => {
+                    return section.trim()
+                })
+
+            	filter = { section: { $in : arrFilter } , book : request.payload.book };
         	}
+            console.log(filter);
          	Questions.find(filter, function (err, questions) {
             if (err) {
               return reply(Boom.badRequest('invalid params'));
             }
-
-            var sects = [];
-            questions.forEach(function(question) {
-              sects.push({ text : question.question, idQuestion : question._id, idSection : question.section, answer : question.answer, StudentAnswer : '' });
+            console.log(questions);
+            const sects = questions.map((question) => {
+                return {text : question.question, idQuestion : question._id, idSection : question.section, answer : question.answer, StudentAnswer : ''}
             });
             var newQuiz = Quiz({
               questions: sects,
               book: request.payload.book,
               description: request.payload.description,
-              student : request.payload.student,
+              student : studentId,
               title : request.payload.title,
               created: new Date(),
               status: 1
@@ -69,7 +67,7 @@ exports.register = function (server, options, next) {
               }
             });
           });
-        } 
+        }
     });
 
     //get all quiz
@@ -95,8 +93,8 @@ exports.register = function (server, options, next) {
               .sort({book: 1})
               .exec(function (err, section) {
                 if (err) {
-                        return reply(Boom.badRequest('invalid params'));
-                      }
+                    return reply(Boom.badRequest('invalid params'));
+                }
 
                 var arrTempId = [];
                 var arrTempNom = [];
@@ -107,7 +105,7 @@ exports.register = function (server, options, next) {
                    if(arrTempId.indexOf(sectionAndBook.book.id) == '-1'){
                       arrTempId.push(sectionAndBook.book.id);
                       arrTempNom.push(sectionAndBook.book.name);
-                      bookSection = []; 
+                      bookSection = [];
                     }
                     bookSection.push(sectionAndBook);
                     content[sectionAndBook.book.id] = bookSection;
@@ -126,7 +124,7 @@ exports.register = function (server, options, next) {
             }else{
               return reply(Boom.badImplementation(err));
             }
-        });
+        }).sort({status: -1, created: -1});
       }
     });
 
@@ -156,7 +154,7 @@ exports.register = function (server, options, next) {
             });
         }
     });
-    
+
     return next();
 };
 
