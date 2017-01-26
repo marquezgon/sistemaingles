@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/marquezgon/sistemaingles#readme",
   "dependencies": {
+    "aws-sdk": "^2.7.28",
     "hapi": "^16.0.1",
     "hapi-auth-jwt": "^4.0.0",
     "jsonwebtoken": "^7.2.1",

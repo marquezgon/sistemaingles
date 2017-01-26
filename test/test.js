@@ -244,23 +244,23 @@ describe('Task routes', function () {
         });
     });
     describe('POST /quiz', function () {
-        it('save  quiz', function (done) {
-            server
-                .post('/quiz')
-                .set('Authorization', `Bearer ${token}`)
-                .send({
-                    book: '58768988e048a822e7161332',
-                    section: '5876a4d4b02a3424c3dbee10,5876a514eba64e24c80b0348',
-                    student: '5877d5e24dfe6b2fbb73e743',
-                    title: 'test',
-                })
-                .expect("Content-type", /json/)
-                .expect(201)
-                .end(function (err, res) {
-                    res.status.should.equal(201);
-                    done();
-                });
-        });
+        // it('save quiz', function (done) {
+        //     server
+        //         .post('/quiz')
+        //         .set('Authorization', `Bearer ${token}`)
+        //         .send({
+        //             book: '58768988e048a822e7161332',
+        //             section: '5876a4d4b02a3424c3dbee10,5876a514eba64e24c80b0348',
+        //             student: '5877d5e24dfe6b2fbb73e743',
+        //             title: 'test',
+        //         })
+        //         .expect("Content-type", /json/)
+        //         .expect(201)
+        //         .end(function (err, res) {
+        //             res.status.should.equal(201);
+        //             done();
+        //         });
+        // });
         it('missing data', function (done) {
             server
                 .post('/users')

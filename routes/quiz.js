@@ -41,12 +41,10 @@ exports.register = function (server, options, next) {
 
             	filter = { section: { $in : arrFilter } , book : request.payload.book };
         	}
-            console.log(filter);
          	Questions.find(filter, function (err, questions) {
             if (err) {
               return reply(Boom.badRequest('invalid params'));
             }
-            console.log(questions);
             const sects = questions.map((question) => {
                 return {text : question.question, idQuestion : question._id, idSection : question.section, answer : question.answer, StudentAnswer : ''}
             });
